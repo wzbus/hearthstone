@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <title>炉石卡牌DIY</title>
   <style>
     * {
       margin: 0;
@@ -13,49 +13,108 @@
 
     @font-face {
       font-family: "Belwebt";
-      src: url("Belwe Bt.ttf");
+      src: url("./font/Belwe Bt.ttf");
     }
 
     @font-face {
       font-family: "文鼎中隶";
-      src: url("文鼎中隶.ttf");
+      src: url("./font/文鼎中隶.ttf");
     }
 
-    #card {
+    @media screen and (max-width:768px) {
+      .box {
+        margin: 0 auto;
+      }
+    }
+
+    @media screen and (min-width:768px) {
+      .box {
+        left: 50px;
+        top: 50px;
+      }
+    }
+
+    .box {
       position: relative;
       width: 300px;
-      height: 400px;
-      background-image: url('zhongli.png');
+      height: 435px;
       background-size: cover;
+    }
+
+    .card {
+      position: absolute;
+      width: 300px;
+      top: 20px;
+    }
+
+    .card_hero {
+      top: 0;
     }
 
     .num {
       position: absolute;
+      width: 100px;
       color: #fff;
-      font-size: 64px;
+      font-size: 68px;
       font-family: "Belwebt";
-      text-shadow: -1px -1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, 1px -1px 0 #000;
+      text-align: center;
+      text-shadow: -1px -1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, 1px 1px 0 #000;
+      -webkit-text-stroke-width: 2px;
+      -webkit-text-stroke-color: #000;
     }
 
-    .fali {
-      top: 0;
-      left: 33px;
+    .cost {
+      top: 15px;
+      left: 0;
     }
 
-    .gongji {
-      top: 320px;
-      left: 33px;
+    .attack {
+      top: 337px;
+      left: 0;
     }
 
-    .shengming {
-      top: 320px;
-      left: 248px;
+    .health {
+      top: 337px;
+      left: 215px;
     }
 
-    #crystal {
+    .cost_weapon {
+      left: -6px;
+    }
+
+    .cost_hero {
+      top: 28px;
+    }
+
+    .health_hero {
+      top: 348px;
+    }
+
+    .dragon {
       position: absolute;
-      top: 234px;
-      left: 146px;
+      top: 1px;
+      left: 79px;
+      width: 219px;
+    }
+
+    .pic {
+      position: absolute;
+      width: 100px;
+      height: 150px;
+      display: none;
+    }
+
+    .border {
+      position: absolute;
+      top: 251px;
+      left: 140px;
+      width: 48px;
+    }
+
+    .crystal {
+      position: absolute;
+      top: 254px;
+      left: 149px;
       width: 20px;
     }
 
@@ -63,53 +122,124 @@
       position: absolute;
       width: 180px;
       height: 85px;
-      top: 270px;
+      top: 290px;
       left: 65px;
       text-align: center;
       word-wrap: break-word;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      z-index: 3;
+    }
+
+    .content_weapon {
+      color: #fff;
+    }
+
+    .version {
+      position: absolute;
+      width: 110px;
+      top: 283px;
+      left: 104px;
+      z-index: 2;
+    }
+
+    .race {
+      position: absolute;
+      width: 140px;
+      height: 30px;
+      line-height: 36px;
+      top: 367px;
+      left: 88px;
+      background: url('./image/race.png');
+      background-size: cover;
+      color: #fff;
+      font-size: 16px;
+      font-family: "文鼎中隶";
+      text-align: center;
+      text-shadow: -1px -1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, 1px 1px 0 #000;
+      z-index: 2;
     }
 
     #mySvg {
       position: absolute;
+    }
+
+    [v-cloak] {
+      display: none;
     }
   </style>
 </head>
 
 <body>
   <div id="app">
-    <select name="type" id="type">
-      <option value="suicong">随从</option>
-      <option value="fashu">法术</option>
-      <option value="wuqi">武器</option>
+    <select v-model="type">
+      <option value="minion">随从牌</option>
+      <option value="spell">法术牌</option>
+      <option value="weapon">武器牌</option>
+      <option value="hero">英雄牌</option>
     </select>
-    <select name="rare" id="rare" v-model="rare">
+    <select v-model="job">
+      <option value="zl">中立</option>
+      <option value="dly">德鲁伊</option>
+      <option value="lr">猎人</option>
+      <option value="fs">法师</option>
+      <option value="qs">骑士</option>
+      <option value="ms">牧师</option>
+      <option value="dz">盗贼</option>
+      <option value="sm">萨满</option>
+      <option value="ss">术士</option>
+      <option value="zs">战士</option>
+    </select>
+    <select v-model="rare">
       <option value="none">无</option>
       <option value="putong">普通</option>
       <option value="xiyou">稀有</option>
       <option value="shishi">史诗</option>
       <option value="chuanshuo">传说</option>
     </select>
-    <input type="text" v-model="fali">
-    <input type="text" v-model="gongji">
-    <input type="text" v-model="shengming">
-    <input type="text" v-model="title">
-    <input type="text" v-model="content">
-    <input type="text" v-model="zhongzu">
-    <div id="card">
-      <div class="num fali">{{fali}}</div>
-      <div class="num gongji">{{gongji}}</div>
-      <div class="num shengming">{{shengming}}</div>
-      <img id="crystal" :src="rare+'.png'" v-if="rare!=='none'" />
-      <div class="content" v-html="miaoshu">{{content}}</div>
+    <select v-model="version">
+      <option value="none">无</option>
+      <option value="base">经典</option>
+      <option value="naxx">纳克萨玛斯的诅咒</option>
+      <option value="gvg">地精大战侏儒</option>
+      <option value="brm">黑石山的火焰</option>
+      <option value="tgt">冠军的试炼</option>
+      <option value="loe">探险者协会</option>
+      <option value="wog">上古之神的低语</option>
+      <option value="onk">卡拉赞之夜</option>
+      <option value="msg">龙争虎斗加基森</option>
+      <option value="jug">勇闯安戈洛</option>
+      <option value="kft">冰封王座的骑士</option>
+      <option value="knc">狗头人与地下世界</option>
+      <option value="tww">女巫森林</option>
+      <option value="tbp">砰砰计划</option>
+      <option value="rst">拉斯塔哈的大乱斗</option>
+      <option value="ros">暗影崛起</option>
+    </select>
+    <input type="text" v-model="cost" />
+    <input type="text" v-model="attack" v-if="type!=='spell'" />
+    <input type="text" v-model="health" v-if="type!=='spell'" />
+    <input type="text" v-model="title" />
+    <input type="text" v-model="content" />
+    <button @click="save">保存</button>
+    <input type="text" v-model="race" v-if="type==='minion'" />
+    <div class="box" v-cloak ref="card">
+      <img class="card" :class="{'card_hero':type==='hero'}" :src="pic">
+      <div class="num cost" :class="{'cost_weapon':type==='weapon','cost_hero':type==='hero'}">{{cost}}</div>
+      <div class="num attack" v-if="type==='minion'||type==='weapon'">{{attack}}</div>
+      <div class="num health" :class="{'health_hero':type==='hero'}" v-if="type!=='spell'">{{health}}</div>
+      <img class="dragon" src="./image/dragon.png" v-if="rare=='chuanshuo'&&type!=='hero'" />
+      <img class="pic" src="./image/demo.jpg" />
+      <img class="border" src="./image/border.png" v-if="rare!=='none'&&type!=='hero'" />
+      <img class="crystal" :src="'./image/'+rare+'.png'" v-if="rare!=='none'&&type!=='hero'" />
+      <div class="content" :class="{'content_weapon':type==='weapon'}" v-html="info">{{content}}</div>
+      <img class="version" :src="'./image/'+version+'.png'" v-if="version!=='none'" />
+      <div class="race" v-if="type=='minion'&&race">{{race}}</div>
       <svg id="mySvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300"
         height="400" viewBox="0 0 400 543">
         <defs>
-          <path id="myPath" stroke="#FF4444" stroke-width="1"
-            d="m 56.336299,314.51481 c 0,0 3.8284,6.45932 52.003431,0.99221 28.84576,-3.27354 57.87325,-12.4128 107.80271,-18.66988 36.69487,-4.59854 72.68333,-5.86349 97.95307,-1.16154 27.31819,5.0831 43.46829,12.47526 43.46829,12.47526"
-            fill="none"></path>
+          <path id="myPath" :d="path" fill="none"></path>
         </defs>
         <text font-size="28" font-weight="bold" font-family="文鼎中隶" text-anchor="middle">
           <textPath xlink:href="#myPath" fill="white" stroke="black" startOffset="50%">
@@ -118,38 +248,42 @@
         </text>
       </svg>
     </div>
-    <canvas id="myCanvas" width="300" height="400">
-      Your browser does not support the HTML5 canvas tag.
-    </canvas>
+    <!-- <canvas id="myCanvas" width="300" height="400">
+      您的浏览器不支持Canvas
+    </canvas> -->
   </div>
   <script src="vue.min.js"></script>
+  <script src="http://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script>
     new Vue({
       el: '#app',
       data() {
         return {
-          fali: 2,
-          gongji: 1,
-          shengming: 1,
+          type: "minion",
+          job: "zl",
+          cost: 2,
+          attack: 1,
+          health: 1,
           title: "工程师学徒",
           rare: "none",
           content: "<b>战吼 ：</b>抽一张牌",
-          zhongzu: "野兽"
+          version: "none",
+          race: ""
         }
       },
       mounted() {
-        var c = document.getElementById("myCanvas");
-        var ctx = c.getContext("2d");
-        var img = new Image();
-        img.onload = function () {
-          ctx.drawImage(img, 0, 0, 300, 400);
-        }
-        img.src = 'zhongli.png'
-        ctx.font = "36px Belwebt Bold";
-        ctx.fillStyle = "#000";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(this.fali, 100, 100);
+        // var c = document.getElementById("myCanvas");
+        // var ctx = c.getContext("2d");
+        // var img = new Image();
+        // img.onload = function () {
+        //   ctx.drawImage(img, 0, 0, 300, 400);
+        // }
+        // img.src = './image/minion_zl.png'
+        // ctx.font = "36px Belwebt Bold";
+        // ctx.fillStyle = "#000";
+        // ctx.textAlign = "center";
+        // ctx.textBaseline = "middle";
+        // ctx.fillText(this.cost, 100, 100);
         // Clip a rectangular area
         // ctx.rect(50, 20, 200, 120);
         // ctx.stroke();
@@ -157,11 +291,43 @@
         // // Draw red rectangle after clip()
         // ctx.fillStyle = "green";
         // ctx.fillRect(0, 0, 150, 100);
-        console.log(this.content)
+      },
+      methods: {
+        save() {
+          html2canvas(this.$refs.card).then(canvas => {
+            let dataURL = canvas.toDataURL("image/png");
+            console.log(dataURL)
+          });
+        }
       },
       computed: {
-        miaoshu() {
+        info() {
           return "<span>" + this.content + "</span>"
+        },
+        pic() {
+          if (this.type === 'weapon') {
+            return "./image/" + this.type + ".png"
+          } else {
+            return "./image/" + this.type + "_" + this.job + ".png"
+          }
+        },
+        path() {
+          let path
+          switch (this.type) {
+            case 'minion':
+              path = "m 56,341 c 0,0 3.8284,6.45932 52.003431,0.99221 28.84576,-3.27354 57.87325,-12.4128 107.80271,-18.66988 36.69487,-4.59854 72.68333,-5.86349 97.95307,-1.16154 27.31819,5.0831 43.46829,12.47526 43.46829,12.47526"
+              break
+            case 'spell':
+              path = "m 67,334 c 0,0 107.142857,-40 274.999997,-4.71429"
+              break
+            case 'weapon':
+              path = "m 69,322 276.285719,0"
+              break
+            case 'hero':
+              path = "m 75,365 c 0,0 138.390898,-67.03301 268.195498,-1.01015"
+              break
+          }
+          return path
         }
       }
     })
