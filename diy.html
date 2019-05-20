@@ -11,6 +11,17 @@
       padding: 0;
     }
 
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      background: url('./image/bg.png') no-repeat;
+      background-size: 100% 100%;
+    }
+
     @font-face {
       font-family: "Belwebt";
       src: url("./font/Belwe Bt.ttf");
@@ -23,28 +34,44 @@
 
     @media screen and (max-width:768px) {
       .box {
+        position: relative;
         margin: 0 auto;
       }
     }
 
     @media screen and (min-width:768px) {
       .box {
+        position: absolute;
         left: 50px;
-        top: 50px;
+        top: 75px;
+      }
+
+      .info {
+        position: absolute;
+        left: 410px;
+        top: 10%;
+        width: calc(100% - 500px);
+        height: 80%;
+        background-color: #fff;
+        border-radius: 10px;
       }
     }
 
     .box {
-      position: relative;
       width: 300px;
       height: 435px;
       background-size: cover;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
     }
 
     .card {
       position: absolute;
       width: 300px;
       top: 20px;
+      z-index: 1;
     }
 
     .card_hero {
@@ -61,9 +88,10 @@
       text-shadow: -1px -1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, 1px 1px 0 #000;
       -webkit-text-stroke-width: 2px;
       -webkit-text-stroke-color: #000;
+      z-index: 2;
     }
 
-    .cost {
+    .mana {
       top: 15px;
       left: 0;
     }
@@ -78,16 +106,16 @@
       left: 215px;
     }
 
-    .cost_weapon {
+    .mana_weapon {
       left: -6px;
     }
 
-    .cost_hero {
-      top: 28px;
+    .mana_hero {
+      top: 30px;
     }
 
     .health_hero {
-      top: 348px;
+      top: 350px;
     }
 
     .dragon {
@@ -95,27 +123,92 @@
       top: 1px;
       left: 79px;
       width: 219px;
+      z-index: 3;
     }
 
-    .pic {
+    .oval {
       position: absolute;
-      width: 100px;
-      height: 150px;
-      display: none;
+      overflow: hidden;
+    }
+
+    .oval_minion {
+      top: 31px;
+      left: 76px;
+      width: 160px;
+      height: 222px;
+      border-radius: 50%;
+    }
+
+    .oval_spell {
+      top: 61px;
+      left: 51px;
+      width: 205px;
+      height: 157px;
+    }
+
+    .oval_weapon {
+      top: 52px;
+      left: 65px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+    }
+
+    .oval_hero {
+      top: 59px;
+      left: 82px;
+      width: 147px;
+      height: 167px;
+    }
+
+    #pic {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .border {
       position: absolute;
-      top: 251px;
-      left: 140px;
+      z-index: 3;
+    }
+
+    .minion_border {
       width: 48px;
+      top: 250px;
+      left: 141px;
+    }
+
+    .spell_border {
+      width: 54px;
+      top: 246px;
+      left: 127px;
+    }
+
+    .weapon_border {
+      width: 45px;
+      top: 251px;
+      left: 132px;
     }
 
     .crystal {
       position: absolute;
-      top: 254px;
-      left: 149px;
       width: 20px;
+      z-index: 3;
+    }
+
+    .minion_crystal {
+      top: 252px;
+      left: 151px;
+    }
+
+    .spell_crystal {
+      top: 255px;
+      left: 144px;
+    }
+
+    .weapon_crystal {
+      top: 251px;
+      left: 145px;
     }
 
     .content {
@@ -158,11 +251,16 @@
       font-family: "文鼎中隶";
       text-align: center;
       text-shadow: -1px -1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, 1px 1px 0 #000;
-      z-index: 2;
+      z-index: 3;
     }
 
     #mySvg {
       position: absolute;
+      z-index: 3;
+    }
+
+    textarea {
+      resize: none;
     }
 
     [v-cloak] {
@@ -173,67 +271,76 @@
 
 <body>
   <div id="app">
-    <select v-model="type">
-      <option value="minion">随从牌</option>
-      <option value="spell">法术牌</option>
-      <option value="weapon">武器牌</option>
-      <option value="hero">英雄牌</option>
-    </select>
-    <select v-model="job">
-      <option value="zl">中立</option>
-      <option value="dly">德鲁伊</option>
-      <option value="lr">猎人</option>
-      <option value="fs">法师</option>
-      <option value="qs">骑士</option>
-      <option value="ms">牧师</option>
-      <option value="dz">盗贼</option>
-      <option value="sm">萨满</option>
-      <option value="ss">术士</option>
-      <option value="zs">战士</option>
-    </select>
-    <select v-model="rare">
-      <option value="none">无</option>
-      <option value="putong">普通</option>
-      <option value="xiyou">稀有</option>
-      <option value="shishi">史诗</option>
-      <option value="chuanshuo">传说</option>
-    </select>
-    <select v-model="version">
-      <option value="none">无</option>
-      <option value="base">经典</option>
-      <option value="naxx">纳克萨玛斯的诅咒</option>
-      <option value="gvg">地精大战侏儒</option>
-      <option value="brm">黑石山的火焰</option>
-      <option value="tgt">冠军的试炼</option>
-      <option value="loe">探险者协会</option>
-      <option value="wog">上古之神的低语</option>
-      <option value="onk">卡拉赞之夜</option>
-      <option value="msg">龙争虎斗加基森</option>
-      <option value="jug">勇闯安戈洛</option>
-      <option value="kft">冰封王座的骑士</option>
-      <option value="knc">狗头人与地下世界</option>
-      <option value="tww">女巫森林</option>
-      <option value="tbp">砰砰计划</option>
-      <option value="rst">拉斯塔哈的大乱斗</option>
-      <option value="ros">暗影崛起</option>
-    </select>
-    <input type="text" v-model="cost" />
-    <input type="text" v-model="attack" v-if="type!=='spell'" />
-    <input type="text" v-model="health" v-if="type!=='spell'" />
-    <input type="text" v-model="title" />
-    <input type="text" v-model="content" />
-    <button @click="save">保存</button>
-    <input type="text" v-model="race" v-if="type==='minion'" />
+    <div class="info">
+      <select v-model="type">
+        <option value="minion">随从牌</option>
+        <option value="spell">法术牌</option>
+        <option value="weapon">武器牌</option>
+        <option value="hero">英雄牌</option>
+      </select>
+      <select v-model="job">
+        <option value="zl">中立</option>
+        <option value="dly">德鲁伊</option>
+        <option value="lr">猎人</option>
+        <option value="fs">法师</option>
+        <option value="qs">骑士</option>
+        <option value="ms">牧师</option>
+        <option value="dz">盗贼</option>
+        <option value="sm">萨满</option>
+        <option value="ss">术士</option>
+        <option value="zs">战士</option>
+      </select>
+      <select v-model="rare">
+        <option value="none">无</option>
+        <option value="putong">普通</option>
+        <option value="xiyou">稀有</option>
+        <option value="shishi">史诗</option>
+        <option value="chuanshuo">传说</option>
+      </select>
+      <select v-model="version">
+        <option value="none">无</option>
+        <option value="base">经典</option>
+        <option value="naxx">纳克萨玛斯的诅咒</option>
+        <option value="gvg">地精大战侏儒</option>
+        <option value="brm">黑石山的火焰</option>
+        <option value="tgt">冠军的试炼</option>
+        <option value="loe">探险者协会</option>
+        <option value="wog">上古之神的低语</option>
+        <option value="onk">卡拉赞之夜</option>
+        <option value="msg">龙争虎斗加基森</option>
+        <option value="jug">勇闯安戈洛</option>
+        <option value="kft">冰封王座的骑士</option>
+        <option value="knc">狗头人与地下世界</option>
+        <option value="tww">女巫森林</option>
+        <option value="tbp">砰砰计划</option>
+        <option value="rst">拉斯塔哈的大乱斗</option>
+        <option value="ros">暗影崛起</option>
+      </select>
+      <input type="text" v-model="mana" />
+      <input type="text" v-model="attack" v-if="type!=='spell'" />
+      <input type="text" v-model="health" v-if="type!=='spell'" />
+      <input type="text" v-model="title" />
+      <textarea rows="4" cols="20" v-model="description"></textarea>
+      <input type="text" v-model="race" v-if="type==='minion'" />
+      <input type="file" id="file" accept="image/jpg,image/jpeg,image/png" @change="upload(this)">
+      <button @click="save">保存</button>
+    </div>
     <div class="box" v-cloak ref="card">
-      <img class="card" :class="{'card_hero':type==='hero'}" :src="pic">
-      <div class="num cost" :class="{'cost_weapon':type==='weapon','cost_hero':type==='hero'}">{{cost}}</div>
+      <img class="card" :class="{'card_hero':type==='hero'}" :src="pic" />
+      <div class="num mana" :class="{'mana_weapon':type==='weapon','mana_hero':type==='hero'}">{{mana}}</div>
       <div class="num attack" v-if="type==='minion'||type==='weapon'">{{attack}}</div>
       <div class="num health" :class="{'health_hero':type==='hero'}" v-if="type!=='spell'">{{health}}</div>
-      <img class="dragon" src="./image/dragon.png" v-if="rare=='chuanshuo'&&type!=='hero'" />
-      <img class="pic" src="./image/demo.jpg" />
-      <img class="border" src="./image/border.png" v-if="rare!=='none'&&type!=='hero'" />
-      <img class="crystal" :src="'./image/'+rare+'.png'" v-if="rare!=='none'&&type!=='hero'" />
-      <div class="content" :class="{'content_weapon':type==='weapon'}" v-html="info">{{content}}</div>
+      <div class="oval" :class="oval">
+        <img id="pic" src="./image/demo.jpg" />
+      </div>
+      <img class="dragon" :src="'./image/'+type+'_dragon.png'" v-if="rare=='chuanshuo'&&type!=='hero'" />
+      <img class="border"
+        :class="{'minion_border':type==='minion','spell_border':type==='spell','weapon_border':type==='weapon'}"
+        :src="'./image/'+type+'_border.png'" v-if="rare!=='none'&&type!=='hero'" />
+      <img class="crystal"
+        :class="{'minion_crystal':type==='minion','spell_crystal':type==='spell','weapon_crystal':type==='weapon'}"
+        :src="'./image/'+rare+'.png'" v-if="rare!=='none'&&type!=='hero'" />
+      <div class="content" :class="{'content_weapon':type==='weapon'}" v-html="content">{{description}}</div>
       <img class="version" :src="'./image/'+version+'.png'" v-if="version!=='none'" />
       <div class="race" v-if="type=='minion'&&race">{{race}}</div>
       <svg id="mySvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300"
@@ -261,12 +368,12 @@
         return {
           type: "minion",
           job: "zl",
-          cost: 2,
+          mana: 2,
           attack: 1,
           health: 1,
           title: "工程师学徒",
           rare: "none",
-          content: "<b>战吼 ：</b>抽一张牌",
+          description: "<b>战吼 ：</b>抽一张牌",
           version: "none",
           race: ""
         }
@@ -283,7 +390,7 @@
         // ctx.fillStyle = "#000";
         // ctx.textAlign = "center";
         // ctx.textBaseline = "middle";
-        // ctx.fillText(this.cost, 100, 100);
+        // ctx.fillText(this.mana, 100, 100);
         // Clip a rectangular area
         // ctx.rect(50, 20, 200, 120);
         // ctx.stroke();
@@ -293,16 +400,27 @@
         // ctx.fillRect(0, 0, 150, 100);
       },
       methods: {
+        upload() {
+          let reads = new FileReader()
+          f = document.getElementById('file').files[0]
+          reads.readAsDataURL(f)
+          reads.onload = function (e) {
+            document.getElementById('pic').src = this.result
+          }
+        },
         save() {
-          html2canvas(this.$refs.card).then(canvas => {
-            let dataURL = canvas.toDataURL("image/png");
-            console.log(dataURL)
-          });
+          //   html2canvas(this.$refs.card).then(canvas => {
+          //     let dataURL = canvas.toDataURL("image/png");
+          //     console.log(dataURL)
+          //   });
         }
       },
       computed: {
-        info() {
-          return "<span>" + this.content + "</span>"
+        oval() {
+          return "oval_" + this.type
+        },
+        content() {
+          return "<span>" + this.description + "</span>"
         },
         pic() {
           if (this.type === 'weapon') {
@@ -324,7 +442,7 @@
               path = "m 69,322 276.285719,0"
               break
             case 'hero':
-              path = "m 75,365 c 0,0 138.390898,-67.03301 268.195498,-1.01015"
+              path = "m 75,363 c 0,0 138.390898,-67.03301 268.195498,-1.01015"
               break
           }
           return path
