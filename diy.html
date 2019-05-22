@@ -4,11 +4,14 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <link rel="shortcut icon" href="./image/ico.png" type="image/x-icon">
   <title>炉石卡牌DIY</title>
   <style>
     * {
       margin: 0;
       padding: 0;
+      vertical-align: middle;
+      outline: none;
     }
 
     html,
@@ -55,6 +58,82 @@
         background-color: #fff;
         border-radius: 10px;
       }
+
+      .info_wrap {
+        height: calc(100% - 30px);
+        padding: 15px 3%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .input_name {
+        width: 25%;
+        margin-right: 3%;
+        text-align: center;
+      }
+
+      .input_race {
+        width: 10%;
+        text-align: center;
+      }
+    }
+
+    .title {
+      text-align: center;
+    }
+
+    label {
+      font-family: "文鼎中隶";
+    }
+
+    input[type="text"],
+    select {
+      height: 30px;
+      border-radius: 3px;
+      border: 1px solid #E2C89C;
+    }
+
+    select {
+      min-width: 10%;
+      margin-right: 3%;
+    }
+
+    .title_img, .num_img {
+      width: 30px;
+      height: 30px;
+    }
+
+    .num_input {
+      width: 30px;
+      margin-right: 3%;
+      text-align: center;
+    }
+
+    textarea {
+      width: calc(100% - 22px);
+      padding: 10px;
+      border-radius: 3px;
+      border: 1px solid #E2C89C;
+    }
+
+    .tip {
+      margin-top: 5px;
+      font-size: 12px;
+    }
+
+    b,
+    i {
+      vertical-align: 0px;
+    }
+
+    .btn {
+      width: 20%;
+      height: 30px;
+      margin: 0 auto;
+      background-color: #E2C89C;
+      border-radius: 3px;
+      border: none;
     }
 
     .box {
@@ -215,14 +294,15 @@
       position: absolute;
       width: 180px;
       height: 85px;
-      top: 290px;
+      top: 285px;
       left: 65px;
+      font-weight: 500;
       text-align: center;
       word-wrap: break-word;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      z-index: 3;
+      z-index: 4;
     }
 
     .content_weapon {
@@ -272,58 +352,85 @@
 <body>
   <div id="app">
     <div class="info">
-      <select v-model="type">
-        <option value="minion">随从牌</option>
-        <option value="spell">法术牌</option>
-        <option value="weapon">武器牌</option>
-        <option value="hero">英雄牌</option>
-      </select>
-      <select v-model="job">
-        <option value="zl">中立</option>
-        <option value="dly">德鲁伊</option>
-        <option value="lr">猎人</option>
-        <option value="fs">法师</option>
-        <option value="qs">骑士</option>
-        <option value="ms">牧师</option>
-        <option value="dz">盗贼</option>
-        <option value="sm">萨满</option>
-        <option value="ss">术士</option>
-        <option value="zs">战士</option>
-      </select>
-      <select v-model="rare">
-        <option value="none">无</option>
-        <option value="putong">普通</option>
-        <option value="xiyou">稀有</option>
-        <option value="shishi">史诗</option>
-        <option value="chuanshuo">传说</option>
-      </select>
-      <select v-model="version">
-        <option value="none">无</option>
-        <option value="base">经典</option>
-        <option value="naxx">纳克萨玛斯的诅咒</option>
-        <option value="gvg">地精大战侏儒</option>
-        <option value="brm">黑石山的火焰</option>
-        <option value="tgt">冠军的试炼</option>
-        <option value="loe">探险者协会</option>
-        <option value="wog">上古之神的低语</option>
-        <option value="onk">卡拉赞之夜</option>
-        <option value="msg">龙争虎斗加基森</option>
-        <option value="jug">勇闯安戈洛</option>
-        <option value="kft">冰封王座的骑士</option>
-        <option value="knc">狗头人与地下世界</option>
-        <option value="tww">女巫森林</option>
-        <option value="tbp">砰砰计划</option>
-        <option value="rst">拉斯塔哈的大乱斗</option>
-        <option value="ros">暗影崛起</option>
-      </select>
-      <input type="text" v-model="mana" />
-      <input type="text" v-model="attack" v-if="type!=='spell'" />
-      <input type="text" v-model="health" v-if="type!=='spell'" />
-      <input type="text" v-model="title" />
-      <textarea rows="4" cols="20" v-model="description"></textarea>
-      <input type="text" v-model="race" v-if="type==='minion'" />
-      <input type="file" id="file" accept="image/jpg,image/jpeg,image/png" @change="upload(this)">
-      <button @click="save">保存</button>
+      <div class="info_wrap">
+        <section class="title">
+          <img src="./image/ico.png" class="title_img">
+          <span>炉石卡牌DIY</span>
+        </section>
+        <section>
+          <label for="type">类型:</label>
+          <select v-model="type">
+            <option value="minion">随从牌</option>
+            <option value="spell">法术牌</option>
+            <option value="weapon">武器牌</option>
+            <option value="hero">英雄牌</option>
+          </select>
+          <label for="type">职业:</label>
+          <select v-model="job">
+            <option value="zl">中立</option>
+            <option value="dly">德鲁伊</option>
+            <option value="lr">猎人</option>
+            <option value="fs">法师</option>
+            <option value="qs">骑士</option>
+            <option value="ms">牧师</option>
+            <option value="dz">盗贼</option>
+            <option value="sm">萨满</option>
+            <option value="ss">术士</option>
+            <option value="zs">战士</option>
+          </select>
+          <label for="rare">品质:</label>
+          <select v-model="rare">
+            <option value="none">无</option>
+            <option value="common">普通</option>
+            <option value="rare">稀有</option>
+            <option value="epic">史诗</option>
+            <option value="legendary">传说</option>
+          </select>
+          <label for="version">版本:</label>
+          <select v-model="version">
+            <option value="none">无</option>
+            <option value="base">经典</option>
+            <option value="naxx">纳克萨玛斯的诅咒</option>
+            <option value="gvg">地精大战侏儒</option>
+            <option value="brm">黑石山的火焰</option>
+            <option value="tgt">冠军的试炼</option>
+            <option value="loe">探险者协会</option>
+            <option value="wog">上古之神的低语</option>
+            <option value="onk">卡拉赞之夜</option>
+            <option value="msg">龙争虎斗加基森</option>
+            <option value="jug">勇闯安戈洛</option>
+            <option value="kft">冰封王座的骑士</option>
+            <option value="knc">狗头人与地下世界</option>
+            <option value="tww">女巫森林</option>
+            <option value="tbp">砰砰计划</option>
+            <option value="rst">拉斯塔哈的大乱斗</option>
+            <option value="ros">暗影崛起</option>
+          </select>
+        </section>
+        <section>
+          <img src="./image/mana.png" class="num_img">
+          <label for="mana">法力值</label>
+          <input type="text" class="num_input" v-model="mana" />
+          <img src="./image/attack.png" class="num_img">
+          <label for="attack">攻击值</label>
+          <input type="text" class="num_input" v-model="attack" :disabled="type=='spell'||type=='hero'" />
+          <img src="./image/health.png" class="num_img">
+          <label for="health">生命值</label>
+          <input type="text" class="num_input" v-model="health" :disabled="type=='spell'" />
+        </section>
+        <section>
+          <label for="name">卡牌名:</label>
+          <input type="text" class="input_name" v-model="name" />
+          <label for="race">种族:</label>
+          <input type="text" class="input_race" v-model="race" :disabled="type!=='minion'" />
+        </section>
+        <section>
+          <textarea rows="4" cols="20" v-model="content"></textarea>
+          <p class="tip">*特殊字样请用HTML标签包裹，如&ltb&gt<b>粗体</b>&lt/b&gt,&lti&gt<i>斜体</i>&lt/i&gt,&ltp&gt强制换行&lt/p&gt</p>
+        </section>
+        <input type="file" id="file" accept="image/jpg,image/jpeg,image/png" @change="upload(this)">
+        <button class="btn" @click="save">保存</button>
+      </div>
     </div>
     <div class="box" v-cloak ref="card">
       <img class="card" :class="{'card_hero':type==='hero'}" :src="pic" />
@@ -331,18 +438,18 @@
       <div class="num attack" v-if="type==='minion'||type==='weapon'">{{attack}}</div>
       <div class="num health" :class="{'health_hero':type==='hero'}" v-if="type!=='spell'">{{health}}</div>
       <div class="oval" :class="oval">
-        <img id="pic" src="./image/demo.jpg" />
+        <img id="pic" src="./image/demo.jpeg" />
       </div>
-      <img class="dragon" :src="'./image/'+type+'_dragon.png'" v-if="rare=='chuanshuo'&&type!=='hero'" />
+      <img class="dragon" :src="'./image/'+type+'_dragon.png'" v-if="rare=='legendary'&&type=='minion'" />
       <img class="border"
         :class="{'minion_border':type==='minion','spell_border':type==='spell','weapon_border':type==='weapon'}"
         :src="'./image/'+type+'_border.png'" v-if="rare!=='none'&&type!=='hero'" />
       <img class="crystal"
         :class="{'minion_crystal':type==='minion','spell_crystal':type==='spell','weapon_crystal':type==='weapon'}"
         :src="'./image/'+rare+'.png'" v-if="rare!=='none'&&type!=='hero'" />
-      <div class="content" :class="{'content_weapon':type==='weapon'}" v-html="content">{{description}}</div>
+      <div class="content" :class="{'content_weapon':type==='weapon'}" v-html="content">{{content}}</div>
       <img class="version" :src="'./image/'+version+'.png'" v-if="version!=='none'" />
-      <div class="race" v-if="type=='minion'&&race">{{race}}</div>
+      <div class="race" v-if="type=='minion'&&race&&race!=='无'">{{race}}</div>
       <svg id="mySvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300"
         height="400" viewBox="0 0 400 543">
         <defs>
@@ -350,7 +457,7 @@
         </defs>
         <text font-size="28" font-weight="bold" font-family="文鼎中隶" text-anchor="middle">
           <textPath xlink:href="#myPath" fill="white" stroke="black" startOffset="50%">
-            {{title}}
+            {{name}}
           </textPath>
         </text>
       </svg>
@@ -360,7 +467,7 @@
     </canvas> -->
   </div>
   <script src="vue.min.js"></script>
-  <script src="http://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <!-- <script src="http://html2canvas.hertzen.com/dist/html2canvas.min.js"></script> -->
   <script>
     new Vue({
       el: '#app',
@@ -368,14 +475,14 @@
         return {
           type: "minion",
           job: "zl",
-          mana: 2,
-          attack: 1,
-          health: 1,
-          title: "工程师学徒",
-          rare: "none",
-          description: "<b>战吼 ：</b>抽一张牌",
+          mana: 7,
+          attack: 7,
+          health: 7,
+          name: "砰砰博士",
+          rare: "legendary",
+          content: "<b>战吼 :</b>\n<p>召唤两个1/1的砰砰机器</p>\n<p>人。<i>警告 : 该机器</i></p>\n<p><i>人随时可能爆炸。</i></p>",
           version: "none",
-          race: ""
+          race: "无"
         }
       },
       mounted() {
@@ -418,9 +525,6 @@
       computed: {
         oval() {
           return "oval_" + this.type
-        },
-        content() {
-          return "<span>" + this.description + "</span>"
         },
         pic() {
           if (this.type === 'weapon') {
