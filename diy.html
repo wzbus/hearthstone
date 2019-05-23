@@ -35,55 +35,50 @@
       src: url("./font/文鼎中隶.ttf");
     }
 
-    @media screen and (max-width:768px) {
-      .box {
-        position: relative;
-        margin: 0 auto;
-      }
+
+    .box {
+      position: absolute;
+      left: 50px;
+      top: 75px;
     }
 
-    @media screen and (min-width:768px) {
-      .box {
-        position: absolute;
-        left: 50px;
-        top: 75px;
-      }
-
-      .info {
-        position: absolute;
-        left: 410px;
-        top: 10%;
-        width: calc(100% - 500px);
-        height: 80%;
-        background-color: #fff;
-        border-radius: 10px;
-      }
-
-      .info_wrap {
-        height: calc(100% - 30px);
-        padding: 15px 3%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-
-      .input_name {
-        width: 25%;
-        margin-right: 3%;
-        text-align: center;
-      }
-
-      .input_race {
-        width: 10%;
-        text-align: center;
-      }
+    .info {
+      position: absolute;
+      left: 410px;
+      top: 10%;
+      width: calc(100% - 500px);
+      min-width: 375px;
+      height: 80%;
+      background-color: #fff;
+      border-radius: 10px;
     }
+
+    .info_wrap {
+      height: calc(100% - 30px);
+      padding: 15px 3%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .input_name {
+      width: 25%;
+      margin-right: 3%;
+      text-align: center;
+    }
+
+    .input_race {
+      width: 10%;
+      text-align: center;
+    }
+
 
     .title {
       text-align: center;
     }
 
     label {
+      font-size: 16px;
       font-family: "文鼎中隶";
     }
 
@@ -99,7 +94,8 @@
       margin-right: 3%;
     }
 
-    .title_img, .num_img {
+    .title_img,
+    .num_img {
       width: 30px;
       height: 30px;
     }
@@ -112,13 +108,13 @@
 
     textarea {
       width: calc(100% - 22px);
+      margin: 5px 0;
       padding: 10px;
       border-radius: 3px;
       border: 1px solid #E2C89C;
     }
 
     .tip {
-      margin-top: 5px;
       font-size: 12px;
     }
 
@@ -127,10 +123,41 @@
       vertical-align: 0px;
     }
 
+    .file {
+      position: relative;
+      line-height: 30px;
+    }
+
+    .flie_wrap {
+      position: absolute;
+      display: inline-block;
+    }
+
+    #fileName {
+      padding: 0 10px;
+      border-radius: 0;
+      text-overflow: ellipsis;
+      box-sizing: border-box;
+    }
+
+    .fake_btn {
+      height: 30px;
+      padding: 0 10px;
+      color: #fff;
+      background-color: #E2C89C;
+      border: none;
+    }
+
+    .file_btn {
+      opacity: 0;
+      cursor: pointer;
+    }
+
     .btn {
       width: 20%;
       height: 30px;
       margin: 0 auto;
+      color: #fff;
       background-color: #E2C89C;
       border-radius: 3px;
       border: none;
@@ -321,7 +348,7 @@
       position: absolute;
       width: 140px;
       height: 30px;
-      line-height: 36px;
+      line-height: 39px;
       top: 367px;
       left: 88px;
       background: url('./image/race.png');
@@ -365,7 +392,7 @@
             <option value="weapon">武器牌</option>
             <option value="hero">英雄牌</option>
           </select>
-          <label for="type">职业:</label>
+          <label for="job">职业:</label>
           <select v-model="job">
             <option value="zl">中立</option>
             <option value="dly">德鲁伊</option>
@@ -425,10 +452,18 @@
           <input type="text" class="input_race" v-model="race" :disabled="type!=='minion'" />
         </section>
         <section>
+          <label for="content">卡牌描述:</label>
           <textarea rows="4" cols="20" v-model="content"></textarea>
           <p class="tip">*特殊字样请用HTML标签包裹，如&ltb&gt<b>粗体</b>&lt/b&gt,&lti&gt<i>斜体</i>&lt/i&gt,&ltp&gt强制换行&lt/p&gt</p>
         </section>
-        <input type="file" id="file" accept="image/jpg,image/jpeg,image/png" @change="upload(this)">
+        <section class="file">
+          <label for="file">图片:</label>
+          <div class="flie_wrap">
+            <input type="text" id="fileName" value="未选择任何文件">
+            <button class="fake_btn">上传</button>
+          </div>
+          <input type="file" id="file_btn" class="file_btn" accept="image/jpg,image/jpeg,image/png" @change="upload">
+        </section>
         <button class="btn" @click="save">保存</button>
       </div>
     </div>
@@ -455,8 +490,8 @@
         <defs>
           <path id="myPath" :d="path" fill="none"></path>
         </defs>
-        <text font-size="28" font-weight="bold" font-family="文鼎中隶" text-anchor="middle">
-          <textPath xlink:href="#myPath" fill="white" stroke="black" startOffset="50%">
+        <text font-size="30" font-family="文鼎中隶" text-anchor="middle">
+          <textPath xlink:href="#myPath" fill="white" startOffset="50%">
             {{name}}
           </textPath>
         </text>
@@ -481,7 +516,7 @@
           name: "砰砰博士",
           rare: "legendary",
           content: "<b>战吼 :</b>\n<p>召唤两个1/1的砰砰机器</p>\n<p>人。<i>警告 : 该机器</i></p>\n<p><i>人随时可能爆炸。</i></p>",
-          version: "none",
+          version: "gvg",
           race: "无"
         }
       },
@@ -507,12 +542,14 @@
         // ctx.fillRect(0, 0, 150, 100);
       },
       methods: {
-        upload() {
+        upload(e) {
           let reads = new FileReader()
-          f = document.getElementById('file').files[0]
-          reads.readAsDataURL(f)
-          reads.onload = function (e) {
+          let f = document.getElementById('file_btn')
+          reads.readAsDataURL(f.files[0])
+          reads.onload = function () {
             document.getElementById('pic').src = this.result
+            let arr = f.value.split('\\')
+            document.getElementById('fileName').value = arr[arr.length - 1]
           }
         },
         save() {
