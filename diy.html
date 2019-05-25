@@ -226,10 +226,24 @@
 
     .dragon {
       position: absolute;
-      top: 1px;
-      left: 79px;
       width: 219px;
       z-index: 3;
+    }
+
+    .minion_dragon {
+      top: 1px;
+      left: 79px;
+    }
+
+    .spell_dragon {
+      width: 226px;
+      top: -5px;
+      left: 90px;
+    }
+
+    .weapon_dragon {
+      top: -11px;
+      left: 76px;
     }
 
     .oval {
@@ -336,12 +350,20 @@
       color: #fff;
     }
 
+    .content_hero {
+      top: 297px;
+    }
+
     .version {
       position: absolute;
       width: 110px;
       top: 283px;
       left: 104px;
       z-index: 2;
+    }
+
+    .version_hero {
+      top: 297px;
     }
 
     .race {
@@ -404,9 +426,11 @@
             <option value="sm">萨满</option>
             <option value="ss">术士</option>
             <option value="zs">战士</option>
+            <option value="sq">死骑</option>
+            <option value="ws">武僧</option>
           </select>
           <label for="rare">品质:</label>
-          <select v-model="rare">
+          <select v-model="rare" :disabled="type=='hero'">
             <option value="none">无</option>
             <option value="common">普通</option>
             <option value="rare">稀有</option>
@@ -467,23 +491,23 @@
         <button class="btn" @click="save">保存</button>
       </div>
     </div>
-    <div class="box" v-cloak ref="card">
-      <img class="card" :class="{'card_hero':type==='hero'}" :src="pic" />
+    <div class="box" id="card" v-cloak>
+      <img class="card" :class="{'card_hero':type==='hero'}" :src="'./image/'+this.type+'_'+this.job+'.png'" />
       <div class="num mana" :class="{'mana_weapon':type==='weapon','mana_hero':type==='hero'}">{{mana}}</div>
       <div class="num attack" v-if="type==='minion'||type==='weapon'">{{attack}}</div>
       <div class="num health" :class="{'health_hero':type==='hero'}" v-if="type!=='spell'">{{health}}</div>
       <div class="oval" :class="oval">
-        <img id="pic" src="./image/demo.jpeg" />
+        <img id="pic" :src="src" />
       </div>
-      <img class="dragon" :src="'./image/'+type+'_dragon.png'" v-if="rare=='legendary'&&type=='minion'" />
+      <img class="dragon" :class="{'minion_dragon':type==='minion','spell_dragon':type==='spell','weapon_dragon':type==='weapon'}" :src="'./image/'+type+'_dragon.png'" v-if="rare=='legendary'&&type!=='hero'" />
       <img class="border"
         :class="{'minion_border':type==='minion','spell_border':type==='spell','weapon_border':type==='weapon'}"
         :src="'./image/'+type+'_border.png'" v-if="rare!=='none'&&type!=='hero'" />
       <img class="crystal"
         :class="{'minion_crystal':type==='minion','spell_crystal':type==='spell','weapon_crystal':type==='weapon'}"
         :src="'./image/'+rare+'.png'" v-if="rare!=='none'&&type!=='hero'" />
-      <div class="content" :class="{'content_weapon':type==='weapon'}" v-html="content">{{content}}</div>
-      <img class="version" :src="'./image/'+version+'.png'" v-if="version!=='none'" />
+      <div class="content" :class="{'content_weapon':type==='weapon','content_hero':type==='hero'}" v-html="content">{{content}}</div>
+      <img class="version" :src="'./image/'+version+'.png'" :class="{'version_hero':type==='hero'}" v-if="type!=='weapon'&&version!=='none'" />
       <div class="race" v-if="type=='minion'&&race&&race!=='无'">{{race}}</div>
       <svg id="mySvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300"
         height="400" viewBox="0 0 400 543">
@@ -502,7 +526,7 @@
     </canvas> -->
   </div>
   <script src="vue.min.js"></script>
-  <!-- <script src="http://html2canvas.hertzen.com/dist/html2canvas.min.js"></script> -->
+  <script src="html2canvas.min.js"></script>
   <script>
     new Vue({
       el: '#app',
@@ -513,6 +537,7 @@
           mana: 7,
           attack: 7,
           health: 7,
+          src: "./image/demo.jpeg",
           name: "砰砰博士",
           rare: "legendary",
           content: "<b>战吼 :</b>\n<p>召唤两个1/1的砰砰机器</p>\n<p>人。<i>警告 : 该机器</i></p>\n<p><i>人随时可能爆炸。</i></p>",
@@ -520,55 +545,33 @@
           race: "无"
         }
       },
-      mounted() {
-        // var c = document.getElementById("myCanvas");
-        // var ctx = c.getContext("2d");
-        // var img = new Image();
-        // img.onload = function () {
-        //   ctx.drawImage(img, 0, 0, 300, 400);
-        // }
-        // img.src = './image/minion_zl.png'
-        // ctx.font = "36px Belwebt Bold";
-        // ctx.fillStyle = "#000";
-        // ctx.textAlign = "center";
-        // ctx.textBaseline = "middle";
-        // ctx.fillText(this.mana, 100, 100);
-        // Clip a rectangular area
-        // ctx.rect(50, 20, 200, 120);
-        // ctx.stroke();
-        // ctx.clip();
-        // // Draw red rectangle after clip()
-        // ctx.fillStyle = "green";
-        // ctx.fillRect(0, 0, 150, 100);
-      },
       methods: {
         upload(e) {
-          let reads = new FileReader()
-          let f = document.getElementById('file_btn')
-          reads.readAsDataURL(f.files[0])
+          let that = this;
+          let reads = new FileReader();
+          let f = document.getElementById('file_btn');
+          reads.readAsDataURL(f.files[0]);
           reads.onload = function () {
-            document.getElementById('pic').src = this.result
-            let arr = f.value.split('\\')
-            document.getElementById('fileName').value = arr[arr.length - 1]
+            that.src = this.result;
+            let arr = f.value.split('\\');
+            document.getElementById('fileName').value = arr[arr.length - 1];
           }
         },
         save() {
-          //   html2canvas(this.$refs.card).then(canvas => {
-          //     let dataURL = canvas.toDataURL("image/png");
-          //     console.log(dataURL)
-          //   });
+          html2canvas(document.getElementById('card')).then(canvas => {
+            let dataURL = canvas.toDataURL("image/png");
+            let link = document.createElement("a");
+            link.href = dataURL;
+            document.body.appendChild(link);
+            var event = document.createEvent('MouseEvents');
+            event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            link.dispatchEvent(event);
+          })
         }
       },
       computed: {
         oval() {
           return "oval_" + this.type
-        },
-        pic() {
-          if (this.type === 'weapon') {
-            return "./image/" + this.type + ".png"
-          } else {
-            return "./image/" + this.type + "_" + this.job + ".png"
-          }
         },
         path() {
           let path
