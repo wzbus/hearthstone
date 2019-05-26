@@ -18,6 +18,7 @@
     body {
       width: 100%;
       height: 100%;
+      overflow: hidden;
     }
 
     body {
@@ -36,10 +37,10 @@
     }
 
 
-    .box {
-      position: absolute;
-      left: 50px;
-      top: 75px;
+    .card {
+      position: relative;
+      margin-left: 50px;
+      margin-top: 75px;
     }
 
     .info {
@@ -163,7 +164,7 @@
       border: none;
     }
 
-    .box {
+    .card {
       width: 300px;
       height: 435px;
       background-size: cover;
@@ -173,7 +174,7 @@
       -ms-user-select: none;
     }
 
-    .card {
+    .card_img {
       position: absolute;
       width: 300px;
       top: 20px;
@@ -282,8 +283,11 @@
     }
 
     #pic {
+      position: absolute;
       width: 100%;
       height: 100%;
+      left: 50%;
+      transform: translateX(-50%);
       object-fit: cover;
     }
 
@@ -392,6 +396,26 @@
       resize: none;
     }
 
+    #bar {
+      position: relative;
+      width: 200px;
+      height: 4px;
+      margin-left: 105px;
+      margin-top: 10px;
+      background-color: #E2C89C;
+      border-radius: 2px;
+    }
+
+    #slider {
+      position: absolute;
+      top: -15px;
+      left: 0;
+      width: 20px;
+      height: 37px;
+      background-image: url("./image/slider.png");
+      cursor: pointer;
+    }
+
     [v-cloak] {
       display: none;
     }
@@ -491,23 +515,27 @@
         <button class="btn" @click="save">保存</button>
       </div>
     </div>
-    <div class="box" id="card" v-cloak>
-      <img class="card" :class="{'card_hero':type==='hero'}" :src="'./image/'+this.type+'_'+this.job+'.png'" />
+    <div class="card" v-cloak>
+      <img class="card_img" :class="{'card_hero':type==='hero'}" :src="'./image/'+this.type+'_'+this.job+'.png'" />
       <div class="num mana" :class="{'mana_weapon':type==='weapon','mana_hero':type==='hero'}">{{mana}}</div>
       <div class="num attack" v-if="type==='minion'||type==='weapon'">{{attack}}</div>
       <div class="num health" :class="{'health_hero':type==='hero'}" v-if="type!=='spell'">{{health}}</div>
       <div class="oval" :class="oval">
         <img id="pic" :src="src" />
       </div>
-      <img class="dragon" :class="{'minion_dragon':type==='minion','spell_dragon':type==='spell','weapon_dragon':type==='weapon'}" :src="'./image/'+type+'_dragon.png'" v-if="rare=='legendary'&&type!=='hero'" />
+      <img class="dragon"
+        :class="{'minion_dragon':type==='minion','spell_dragon':type==='spell','weapon_dragon':type==='weapon'}"
+        :src="'./image/'+type+'_dragon.png'" v-if="rare=='legendary'&&type!=='hero'" />
       <img class="border"
         :class="{'minion_border':type==='minion','spell_border':type==='spell','weapon_border':type==='weapon'}"
         :src="'./image/'+type+'_border.png'" v-if="rare!=='none'&&type!=='hero'" />
       <img class="crystal"
         :class="{'minion_crystal':type==='minion','spell_crystal':type==='spell','weapon_crystal':type==='weapon'}"
         :src="'./image/'+rare+'.png'" v-if="rare!=='none'&&type!=='hero'" />
-      <div class="content" :class="{'content_weapon':type==='weapon','content_hero':type==='hero'}" v-html="content">{{content}}</div>
-      <img class="version" :src="'./image/'+version+'.png'" :class="{'version_hero':type==='hero'}" v-if="type!=='weapon'&&version!=='none'" />
+      <div class="content" :class="{'content_weapon':type==='weapon','content_hero':type==='hero'}" v-html="content">
+        {{content}}</div>
+      <img class="version" :src="'./image/'+version+'.png'" :class="{'version_hero':type==='hero'}"
+        v-if="type!=='weapon'&&version!=='none'" />
       <div class="race" v-if="type=='minion'&&race&&race!=='无'">{{race}}</div>
       <svg id="mySvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300"
         height="400" viewBox="0 0 400 543">
@@ -521,12 +549,15 @@
         </text>
       </svg>
     </div>
+    <div id="bar" v-show="src!=='./image/demo.jpeg'">
+      <div id="slider" @mousedown="start($event)" @touchstart="start($event)" @mousemove="move" @touchmove="move" @mouseup="end"
+        @touchend="end"></div>
+    </div>
     <!-- <canvas id="myCanvas" width="300" height="400">
       您的浏览器不支持Canvas
     </canvas> -->
   </div>
   <script src="vue.min.js"></script>
-  <script src="html2canvas.min.js"></script>
   <script>
     new Vue({
       el: '#app',
@@ -542,7 +573,8 @@
           rare: "legendary",
           content: "<b>战吼 :</b>\n<p>召唤两个1/1的砰砰机器</p>\n<p>人。<i>警告 : 该机器</i></p>\n<p><i>人随时可能爆炸。</i></p>",
           version: "gvg",
-          race: "无"
+          race: "无",
+          drag: false
         }
       },
       methods: {
@@ -558,15 +590,49 @@
           }
         },
         save() {
-          html2canvas(document.getElementById('card')).then(canvas => {
-            let dataURL = canvas.toDataURL("image/png");
-            let link = document.createElement("a");
-            link.href = dataURL;
-            document.body.appendChild(link);
-            var event = document.createEvent('MouseEvents');
-            event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-            link.dispatchEvent(event);
-          })
+          alert("暂不支持");
+        },
+        getPosition(node) {
+          let left = node.offsetLeft;
+          let top = node.offsetTop;
+          current = node.offsetParent;
+          while (current != null) {
+            left += current.offsetLeft;
+            top += current.offsetTop;
+            current = current.offsetParent;
+          }
+          return {
+            "left": left,
+            "top": top
+          }
+        },
+        start(e) {
+          e.stopPropagation();
+          this.drag = true;
+        },
+        move(e) {
+          if (this.drag) {
+            let x;
+            let el = document.getElementById('pic');
+            if (!e.touches) {
+              x = e.clientX;
+            } else {
+              x = e.touches[0].pageX;
+            }
+            let bar_left = this.getPosition(bar).left + 10;
+            let slider_left = x - bar_left;
+            if (slider_left >= bar.offsetWidth - 10) {
+              slider_left = bar.offsetWidth - 10;
+            }
+            if (slider_left < 0) {
+              slider_left = 0;
+            }
+            slider.style.left = slider_left + "px";
+            el.style.width = parseInt((slider_left / (bar.offsetWidth - 10)) * 100 + 100) + "%";
+          }
+        },
+        end() {
+          this.drag = false;
         }
       },
       computed: {
@@ -591,6 +657,10 @@
           }
           return path
         }
+      },
+      mounted() {
+        var bar = document.getElementById('bar');
+        var slider = document.getElementById('slider');
       }
     })
   </script>
