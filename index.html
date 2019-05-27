@@ -18,7 +18,7 @@
     body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
+      overflow-y: hidden;
     }
 
     body {
@@ -35,7 +35,6 @@
       font-family: "文鼎中隶";
       src: url("./font/文鼎中隶.ttf");
     }
-
 
     .card {
       position: relative;
@@ -67,12 +66,6 @@
       margin-right: 3%;
       text-align: center;
     }
-
-    .input_race {
-      width: 10%;
-      text-align: center;
-    }
-
 
     .title {
       text-align: center;
@@ -183,6 +176,14 @@
 
     .card_hero {
       top: 0;
+    }
+
+    .clan {
+      position: absolute;
+      top: 34px;
+      left: 15px;
+      width: 60px;
+      z-index: 2;
     }
 
     .num {
@@ -387,6 +388,33 @@
       z-index: 3;
     }
 
+    .select_wrap {
+      position: relative;
+      width: 10%;
+      min-width: 70px;
+      height: 30px;
+      margin-right: 3%;
+      display: inline-block;
+    }
+
+    .input_race {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 80%;
+      height: 28px !important;
+      margin: 1px 0 1px 1px;
+      border: none !important;
+      text-align: center;
+    }
+
+    .select_race {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+
     #mySvg {
       position: absolute;
       z-index: 3;
@@ -497,7 +525,28 @@
           <label for="name">卡牌名:</label>
           <input type="text" class="input_name" v-model="name" />
           <label for="race">种族:</label>
-          <input type="text" class="input_race" v-model="race" :disabled="type!=='minion'" />
+          <div class="select_wrap">
+            <select class="select_race" ref="race" @change="setRace">
+              <option value="none">无</option>
+              <option value="long">龙</option>
+              <option value="ysh">野兽</option>
+              <option value="yr">鱼人</option>
+              <option value="hd">海盗</option>
+              <option value="em">恶魔</option>
+              <option value="tt">图腾</option>
+              <option value="ys">元素</option>
+              <option value="jx">机械</option>
+              <option value="all">全部</option>
+            </select>
+            <input type="text" class="input_race" v-model="race" :disabled="type!=='minion'" />
+          </div>
+          <label for="version" v-show="version==='msg'">版本:</label>
+          <select v-model="clan" v-show="version==='msg'">
+            <option value="none">无</option>
+            <option value="ajj">暗金教</option>
+            <option value="wsd">污手党</option>
+            <option value="ylb">玉莲帮</option>
+          </select>
         </section>
         <section>
           <label for="content">卡牌描述:</label>
@@ -516,7 +565,8 @@
       </div>
     </div>
     <div class="card" v-cloak>
-      <img class="card_img" :class="{'card_hero':type==='hero'}" :src="'./image/'+this.type+'_'+this.job+'.png'" />
+      <img class="card_img" :class="{'card_hero':type==='hero'}" :src="'./image/'+type+'_'+job+'.png'" />
+      <img class="clan" :src="'./image/'+clan+'.png'" v-if="version==='msg'&&clan!=='none'">
       <div class="num mana" :class="{'mana_weapon':type==='weapon','mana_hero':type==='hero'}">{{mana}}</div>
       <div class="num attack" v-if="type==='minion'||type==='weapon'">{{attack}}</div>
       <div class="num health" :class="{'health_hero':type==='hero'}" v-if="type!=='spell'">{{health}}</div>
@@ -550,8 +600,8 @@
       </svg>
     </div>
     <div id="bar" v-show="src!=='./image/demo.jpeg'">
-      <div id="slider" @mousedown="start($event)" @touchstart="start($event)" @mousemove="move" @touchmove="move" @mouseup="end"
-        @touchend="end"></div>
+      <div id="slider" @mousedown="start($event)" @touchstart="start($event)" @mousemove="move" @touchmove="move"
+        @mouseup="end" @touchend="end"></div>
     </div>
     <!-- <canvas id="myCanvas" width="300" height="400">
       您的浏览器不支持Canvas
@@ -573,11 +623,17 @@
           rare: "legendary",
           content: "<b>战吼 :</b>\n<p>召唤两个1/1的砰砰机器</p>\n<p>人。<i>警告 : 该机器</i></p>\n<p><i>人随时可能爆炸。</i></p>",
           version: "gvg",
+          clan: "none",
           race: "无",
           drag: false
         }
       },
       methods: {
+        setRace() {
+          let el = this.$refs.race;
+          let i = el.selectedIndex;
+          this.race = el.options[i].text;
+        },
         upload(e) {
           let that = this;
           let reads = new FileReader();
@@ -592,10 +648,10 @@
         save() {
           alert("暂不支持");
         },
-        getPosition(node) {
-          let left = node.offsetLeft;
-          let top = node.offsetTop;
-          current = node.offsetParent;
+        getPosition(e) {
+          let left = e.offsetLeft;
+          let top = e.offsetTop;
+          current = e.offsetParent;
           while (current != null) {
             left += current.offsetLeft;
             top += current.offsetTop;
@@ -631,28 +687,28 @@
             el.style.width = parseInt((slider_left / (bar.offsetWidth - 10)) * 100 + 100) + "%";
           }
         },
-        end() {
+        end(e) {
           this.drag = false;
         }
       },
       computed: {
         oval() {
-          return "oval_" + this.type
+          return "oval_" + this.type;
         },
         path() {
           let path
           switch (this.type) {
             case 'minion':
-              path = "m 56,341 c 0,0 3.8284,6.45932 52.003431,0.99221 28.84576,-3.27354 57.87325,-12.4128 107.80271,-18.66988 36.69487,-4.59854 72.68333,-5.86349 97.95307,-1.16154 27.31819,5.0831 43.46829,12.47526 43.46829,12.47526"
+              path = "m 56,341 c 0,0 3.8284,6.45932 52.003431,0.99221 28.84576,-3.27354 57.87325,-12.4128 107.80271,-18.66988 36.69487,-4.59854 72.68333,-5.86349 97.95307,-1.16154 27.31819,5.0831 43.46829,12.47526 43.46829,12.47526";
               break
             case 'spell':
-              path = "m 67,334 c 0,0 107.142857,-40 274.999997,-4.71429"
+              path = "m 67,334 c 0,0 107.142857,-40 274.999997,-4.71429";
               break
             case 'weapon':
-              path = "m 69,322 276.285719,0"
+              path = "m 69,322 276.285719,0";
               break
             case 'hero':
-              path = "m 75,363 c 0,0 138.390898,-67.03301 268.195498,-1.01015"
+              path = "m 75,363 c 0,0 138.390898,-67.03301 268.195498,-1.01015";
               break
           }
           return path
