@@ -23,7 +23,7 @@
     }
 
     body {
-      background: url('./image/bg.png') no-repeat;
+      background: url("./image/bg.png") no-repeat;
       background-size: 100% 100%;
       user-select: none;
       -webkit-user-select: none;
@@ -51,7 +51,7 @@
 
     .info_wrap {
       height: calc(100% - 30px);
-      padding: 15px 3%;
+      padding: 15px 5%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -78,7 +78,7 @@
     }
 
     select {
-      min-width: 10%;
+      min-width: 75px;
       margin-right: 3%;
     }
 
@@ -163,6 +163,7 @@
       width: 300px;
       top: 20px;
       z-index: 1;
+      pointer-events: none;
     }
 
     .card_hero {
@@ -221,6 +222,7 @@
       position: absolute;
       width: 219px;
       z-index: 3;
+      pointer-events: none;
     }
 
     .minion_dragon {
@@ -276,11 +278,12 @@
 
     #pic {
       position: absolute;
-      width: 100%;
+      /* width: 100%; */
       height: 100%;
       left: 50%;
       transform: translateX(-50%);
-      object-fit: cover;
+      /* object-fit: cover; */
+      background-position: center;
     }
 
     .border {
@@ -369,7 +372,7 @@
       line-height: 39px;
       top: 367px;
       left: 88px;
-      background: url('./image/race.png');
+      background: url("./image/race.png");
       background-size: cover;
       color: #fff;
       font-size: 16px;
@@ -382,7 +385,7 @@
     .select_wrap {
       position: relative;
       width: 10%;
-      min-width: 70px;
+      min-width: 75px;
       height: 30px;
       margin-right: 3%;
       display: inline-block;
@@ -409,6 +412,7 @@
     #mySvg {
       position: absolute;
       z-index: 3;
+      pointer-events: none;
     }
 
     textarea {
@@ -420,7 +424,6 @@
       width: 200px;
       height: 4px;
       top: calc(50% + 230px);
-      margin-left: 105px;
       background-color: #E2C89C;
       border-radius: 2px;
     }
@@ -428,7 +431,7 @@
     #slider {
       position: absolute;
       top: -15px;
-      left: 0;
+      left: -10px;
       width: 20px;
       height: 37px;
       background-image: url("./image/slider.png");
@@ -456,6 +459,10 @@
         width: 25%;
         margin-right: 3%;
       }
+
+      #bar {
+        margin-left: 105px;
+      }
     }
 
     @media screen and (max-width:768px) {
@@ -466,9 +473,9 @@
       }
 
       .info {
-        height: 95%;
+        height: 100%;
         left: 100%;
-        top: 10px;
+        top: 0;
       }
 
       section {
@@ -476,7 +483,11 @@
       }
 
       .input_name {
-        width: calc(100% - 70px);
+        width: calc(100% - 65px);
+      }
+
+      #bar {
+        left: calc(50% - 100px);
       }
     }
 
@@ -526,7 +537,7 @@
             <option value="legendary">传说</option>
           </select>
           <label for="version">版本:</label>
-          <select v-model="version">
+          <select v-model="version" :disabled="type=='weapon'">
             <option value="none">无</option>
             <option value="base">经典</option>
             <option value="naxx">纳克萨玛斯的诅咒</option>
@@ -612,12 +623,13 @@
       <div class="num mana" :class="{'mana_weapon':type==='weapon','mana_hero':type==='hero'}">{{mana}}</div>
       <div class="num attack" v-if="type==='minion'||type==='weapon'">{{attack}}</div>
       <div class="num health" :class="{'health_hero':type==='hero'}" v-if="type!=='spell'">{{health}}</div>
-      <div class="oval" :class="oval">
-        <img id="pic" :src="src" />
+      <div class="oval" :class="oval" @mousedown="startPic($event)" @touchstart="startPic($event)" @mousemove="movePic" @touchmove.prevent="movePic"
+      @mouseup="endPic" @touchend="endPic" @mouseleave="endPic">
+        <img id="pic" :src="src" draggable="false"/>
       </div>
       <img class="dragon"
         :class="{'minion_dragon':type==='minion','spell_dragon':type==='spell','weapon_dragon':type==='weapon'}"
-        :src="'./image/'+type+'_dragon.png'" v-if="rare=='legendary'&&type!=='hero'" />
+        :src="'./image/'+type+'_dragon.png'" v-if="rare=='legendary'&&type!=='hero'" draggable="false"/>
       <img class="border"
         :class="{'minion_border':type==='minion','spell_border':type==='spell','weapon_border':type==='weapon'}"
         :src="'./image/'+type+'_border.png'" v-if="rare!=='none'&&type!=='hero'" />
@@ -641,9 +653,9 @@
         </text>
       </svg>
     </div>
-    <div id="bar" v-show="src!=='./image/demo.jpeg'">
-      <div id="slider" @mousedown="start($event)" @touchstart="start($event)" @mousemove="move" @touchmove="move"
-        @mouseup="end" @touchend="end"></div>
+    <div id="bar" v-show="!finish">
+      <div id="slider" @mousedown="start($event)" @touchstart="start($event)" @mousemove="move" @touchmove.prevent="move"
+        @mouseup="end" @touchend="end" @mouseleave="end"></div>
     </div>
     <!-- <canvas id="myCanvas" width="300" height="400">
       您的浏览器不支持Canvas
@@ -651,8 +663,9 @@
   </div>
   <script src="vue.min.js"></script>
   <script>
+    var oldX, oldY;
     new Vue({
-      el: '#app',
+      el: "#app",
       data() {
         return {
           type: "minion",
@@ -667,7 +680,9 @@
           version: "gvg",
           clan: "none",
           race: "无",
-          drag: false
+          drag: false,
+          dragPic: false,
+          finish: true
         }
       },
       methods: {
@@ -677,17 +692,25 @@
           this.race = el.options[i].text;
         },
         upload(e) {
+          this.finish = false;
           let that = this;
           let reads = new FileReader();
-          let f = document.getElementById('file_btn');
+          let f = document.getElementById("file_btn");
+          let el = document.getElementById("pic");
+          el.style.height = 100 + "%";
+          el.style.top = 0;
+          el.style.left = 50 + "%";
+          slider.style.left = -10 + "px";
           reads.readAsDataURL(f.files[0]);
           reads.onload = function () {
             that.src = this.result;
-            let arr = f.value.split('\\');
-            document.getElementById('fileName').value = arr[arr.length - 1];
+            let arr = f.value.split("\\");
+            document.getElementById("fileName").value = arr[arr.length - 1];
           }
         },
         save() {
+          this.finish = true;
+          document.getElementById("pic").style.cursor = "default";
           alert("暂不支持");
         },
         getPosition(e) {
@@ -705,13 +728,15 @@
           }
         },
         start(e) {
-          e.stopPropagation();
-          this.drag = true;
+          if (!this.finish) {
+            e.stopPropagation();
+            this.drag = true;
+          }
         },
         move(e) {
           if (this.drag) {
             let x;
-            let el = document.getElementById('pic');
+            let el = document.getElementById("pic");
             if (!e.touches) {
               x = e.clientX;
             } else {
@@ -719,18 +744,48 @@
             }
             let bar_left = this.getPosition(bar).left + 10;
             let slider_left = x - bar_left;
-            if (slider_left >= bar.offsetWidth - 10) {
-              slider_left = bar.offsetWidth - 10;
+            if (slider_left >= 190) {
+              slider_left = 190;
             }
-            if (slider_left < 0) {
-              slider_left = 0;
+            if (slider_left < -10) {
+              slider_left = -10;
             }
             slider.style.left = slider_left + "px";
-            el.style.width = parseInt((slider_left / (bar.offsetWidth - 10)) * 100 + 100) + "%";
+            el.style.height = parseInt(slider_left + 10 + 100) + "%";
           }
         },
         end(e) {
           this.drag = false;
+        },
+        startPic(e) {
+          if (!this.finish) {
+            this.dragPic = true;
+            oldX = e.clientX;
+            oldY = e.clientY;
+            document.getElementById("pic").style.cursor = "move";
+          }
+        },
+        movePic(e) {
+          if (this.dragPic) {
+            let x, y;
+            let el = document.getElementById("pic");
+            if (!e.touches) {
+              x = e.clientX;
+              y = e.clientY;
+            } else {
+              x = e.touches[0].pageX;
+              y = e.touches[0].pageY;
+            }
+            if (el.offsetLeft + x - oldX > 0) {
+              el.style.left = el.offsetLeft + x - oldX + "px";
+              el.style.top = el.offsetTop + y - oldY + "px";
+            }
+            oldX = x;
+            oldY = y;
+          }
+        },
+        endPic(e) {
+          this.dragPic = false;
         }
       },
       computed: {
@@ -738,27 +793,25 @@
           return "oval_" + this.type;
         },
         path() {
-          let path
+          let path;
           switch (this.type) {
-            case 'minion':
+            case "minion":
               path = "m 56,341 c 0,0 3.8284,6.45932 52.003431,0.99221 28.84576,-3.27354 57.87325,-12.4128 107.80271,-18.66988 36.69487,-4.59854 72.68333,-5.86349 97.95307,-1.16154 27.31819,5.0831 43.46829,12.47526 43.46829,12.47526";
               break
-            case 'spell':
+            case "spell":
               path = "m 67,334 c 0,0 107.142857,-40 274.999997,-4.71429";
               break
-            case 'weapon':
+            case "weapon":
               path = "m 69,322 276.285719,0";
               break
-            case 'hero':
+            case "hero":
               path = "m 75,363 c 0,0 138.390898,-67.03301 268.195498,-1.01015";
               break
           }
-          return path
+          return path;
         }
       },
       mounted() {
-        var bar = document.getElementById('bar');
-        var slider = document.getElementById('slider');
       }
     })
   </script>
